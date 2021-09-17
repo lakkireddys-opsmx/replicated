@@ -1,0 +1,210 @@
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: config-oes
+spec:
+  groups:
+    - name: installSpinnaker
+      title: Installation Mode 
+      description: "Select the Installation Mode"
+      items:
+        - name: installSpinnaker
+          title: Install Spinnaker
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: installRedis
+      title: Installation of Redis 
+      description: "Installation of Redis"
+      items:
+        - name: installRedis
+          title: Install Redis
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: OESInstallation
+      title: OES Mode
+      description: "OES Mode"
+      items:
+      - name: installationMode
+        default: OES-AP
+        type: select_one
+        items:
+        - name: OES-AP
+          title: OES-AP
+        - name: None
+          title: None
+    - name: secretStore
+      title: storing account and integration secrets
+      description: "Secret Store type"
+      items:
+      - name: secretStore
+        type: select_one
+        default: db
+        items:
+        - name: db
+          title: DB
+        - name: vault
+          title: Vault
+      - name: address
+        title: Vault Address
+        type: text
+        when: '{{repl (ConfigOptionEquals "secretStore" "vault")}}'
+      - name: token
+        title: Vault Token
+        type: password
+        when: '{{repl (ConfigOptionEquals "secretStore" "vault")}}' 
+    - name: certManager
+      title: Is CertManager Installed?
+      description: "CertManager Existence"
+      items:
+        - name: installed
+          title: Is CertManager Installed?
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: commonGate
+      title: Common Gate to OES and Spinnaker
+      description: "CertManager Existence"
+      items:
+        - name: cgenabled
+          title: Common Gate to OES and Spinnaker
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: ssl
+      title: SSL to be enabled 
+      description: SSL to be enabled for OES/Spin Services
+      items:
+        - name: sslenabled
+          title: SSL to be enabled 
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: createIngress
+      title: Expose OES/spin using an ingress 
+      description: Expose OES/Spin using an ingress
+      items:
+        - name: createIngress
+          title: Expose OES/spin using an ingress
+          help_text: An example field to toggle inclusion of an Ingress Object
+          type: bool
+          default: "1"
+    - name: spinDeck
+      title: Enter Spin Deck URL
+      description: "Spin Deck URL"
+      items:
+      - name: host
+        title: enter spin deck hostname
+        help_text: An example field to toggle inclusion of an Ingress Object
+        type: text
+        default: "spin.example.ops.com"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: protocol
+        title: protocol for Deck
+        type: text
+        default: "https"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: serviceAnnotations
+        title: serviceAnnotations for Ingress
+        type: text 
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: ingress
+      title: Ingress Details
+      description: "Ingress DEtails"
+      items:
+      - name: annotations
+        title: Enter Ingress Annotations
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: spinGate
+      title: Enter Spin Gate URL
+      description: "Spin Gate URL"
+      items:
+      - name: host
+        title: enter spin gate hostname
+        help_text: An example field to toggle inclusion of an Ingress Object
+        type: text
+        default: "spin.example.ops.com"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: protocol
+        title: protocol for gate
+        type: text
+        default: "https"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: serviceAnnotations
+        title: serviceAnnotations for Ingress
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: ingress
+      title: Ingress Details
+      description: "Ingress DEtails"
+      items:
+      - name: annotations
+        title: Enter Ingress Annotations
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: oesUI
+      title: Enter OES UI URL
+      description: "OES UI URL"
+      items:
+      - name: host
+        title: enter oes ui  hostname
+        help_text: An example field to toggle inclusion of an Ingress Object
+        type: text
+        default: "oes.example.ops.com"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: protocol
+        title: protocol for ui
+        type: text
+        default: "https"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: serviceAnnotations
+        title: serviceAnnotations for Ingress
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: ingress
+      title: Ingress Details
+      description: "Ingress DEtails"
+      items:
+      - name: annotations
+        title: Enter Ingress Annotations
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: oesGate
+      title: Enter OES Gate URL
+      description: "OES Gate URL"
+      items:
+      - name: host
+        title: enter oes gate hostname
+        help_text: An example field to toggle inclusion of an Ingress Object
+        type: text
+        default: "oes.example.ops.com"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: protocol
+        title: protocol for ui
+        type: text
+        default: "https"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      - name: serviceAnnotations
+        title: serviceAnnotations for Ingress
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: ingress
+      title: Ingress Details
+      description: "Ingress DEtails"
+      items:
+      - name: annotations
+        title: Enter Ingress Annotations
+        type: text_area
+        default: "kubernetes.io/ingress.class: nginx"
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+
