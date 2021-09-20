@@ -3,10 +3,10 @@ kind: Application
 metadata:
   name: app-slug
 spec:
-  title: opsmx-spin
+  title: susmita-srini-test
   icon: https://raw.githubusercontent.com/cncf/artwork/master/projects/kubernetes/icon/color/kubernetes-icon-color.png
   statusInformers:
-    - deployment/example-nginx
+    - deployment/spin-gate
   ports:
     - serviceName: "example-nginx"
       servicePort: 80

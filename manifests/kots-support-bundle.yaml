@@ -1,7 +1,7 @@
 apiVersion: troubleshoot.replicated.com/v1beta1
 kind: SupportBundle
 metadata:
-  name: support-sample
+  name: support-oes
 spec:
   collectors:
     - clusterInfo: {}

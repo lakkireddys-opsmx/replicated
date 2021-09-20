@@ -20,9 +20,9 @@ spec:
         outcomes:
           - pass:
               when: "== docker"
-              message: Docker container runtime was found.
+              message: Docker container runtime was found - susmita.
           - fail:
-              message: Did not find Docker container runtime.
+              message: Did not find Docker container runtime - susmita.
     - distribution:
         checkName: Check Kubernetes environment.
         outcomes:

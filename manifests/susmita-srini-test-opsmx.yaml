@@ -1,14 +1,14 @@
 apiVersion: kots.io/v1beta1
 kind: HelmChart
 metadata:
-  name: samplechart
+  name: susmitachart
 spec:
   # chart identifies a matching chart from a .tgz
   chart:
     name: oes
     chartVersion: 3.9.3
 
-  exclude: "repl{{ ConfigOptionEquals `include_chart` `include_chart_no`}}"
+  #exclude: "repl{{ ConfigOptionEquals `include_chart` `include_chart_no`}}"
 
   # helmVersion identifies the Helm Version used to render the Chart. Default is v2.
   helmVersion: v3
@@ -25,7 +25,12 @@ spec:
       ssl:
         enabled: "repl{{ ConfigOption `sslenabled`}}"
       createIngress: "repl{{ ConfigOption `createIngress`}}"
-
+      customCerts:
+        enabled: "repl{{ ConfigOption `customCerts`}}"
+    spinnaker:
+      halyard:
+        gitopsHalyard: "repl{{ ConfigOption `gitopsHalyard`}}"
+        pipelinePromotion: "repl{{ ConfigOption `pipelinePromotion`}}" 
   optionalValues:
     - when: "repl{{ ConfigOptionEquals `secretStore` `vault`}}"
       values:
@@ -37,25 +42,25 @@ spec:
         global:
           spinDeck: 
             protocol: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `protocol`}}repl{{ end}}"
-            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `host`}}repl{{ end}}"
+            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `spindeck`}}repl{{ end}}"
             serviceAnnotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `serviceAnnotations`}}repl{{ end}}"
             ingress:
               annotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `annotations`}}repl{{ end}}"
           spinGate:
             protocol: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `protocol`}}repl{{ end}}"
-            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `host`}}repl{{ end}}"
+            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `spingate`}}repl{{ end}}"
             serviceAnnotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `serviceAnnotations`}}repl{{ end}}"
             ingress:
               annotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `annotations`}}repl{{ end}}"
           oesUI:
             protocol: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `protocol`}}repl{{ end}}"
-            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `host`}}repl{{ end}}"
+            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `oesui`}}repl{{ end}}"
             serviceAnnotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `serviceAnnotations`}}repl{{ end}}"
             ingress:
               annotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `annotations`}}repl{{ end}}"
           oesGate:
             protocol: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `protocol`}}repl{{ end}}"
-            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `host`}}repl{{ end}}"
+            host: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `oesgate`}}repl{{ end}}"
             serviceAnnotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `serviceAnnotations`}}repl{{ end}}"
             ingress:
               annotations: "repl{{ if ConfigOptionEquals `createIngress` `1`}}repl{{ ConfigOption `annotations`}}repl{{ end}}"
