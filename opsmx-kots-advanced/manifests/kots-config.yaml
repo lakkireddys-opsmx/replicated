@@ -1,0 +1,301 @@
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: config-oes
+spec:
+  groups:
+    - name: createIngress
+      title: Expose OES using an ingress 
+      description: Expose OES/Spin using an ingress
+      items:
+      - name: createIngress
+        title: Expose OES using an ingress
+        help_text: Please make sure you create a DNS record before Installing
+        type: bool
+        default: "1"
+    - name: DN
+      title: Ingress Host details
+      description: "Create a valid wildcard domain in DNS"
+      items:
+      - name: DN
+        title: Enter valid Domain Name
+        help_text: "Spinnaker is accessible on spinnaker.example.ops.com and oes on oes.example.ops.com and the controller can be accessed on controller.example.ops.com"
+        type: text
+        when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+      when: '{{repl (ConfigOptionEquals "createIngress" "1")}}'
+    - name: certmanager
+      title: CertManager for HTTPS
+      description: |
+        Select if OES has to be exposed using HTTPS.
+      items:
+        - name: certmanager
+          type: bool
+          help_text: "This installs certmanager and the respective crd's for installing OES in HTTPS"
+          title: Please checkin if you do not have a certmanager installed in the cluster.
+          default: "1"
+          hidden: true
+    - name: installOpenLdap
+      title: Install OpenLdap for OES
+      description: Installs OpenLdap as part of OES and configures authn and authz
+      items:
+        - name: installOpenLdap
+          title: OpenLdap
+          type: bool
+          default: "1"
+          hidden: true
+    - name: genabled
+      title: GitOps Style
+      description: "Installs Spinnaker in GitOps Style"
+      items:
+        - name: genabled
+          title: Install Spinnaker in GitOps Style
+          help_text: Configures the Spinnaker using the files in Github
+          type: bool
+          default: "0"
+    - name: repotype
+      title: GitOps Configuration Repo Type
+      description: "Select Repo type for the OES Installtion in gitops Style"
+      items:
+      - name: repotype
+        title: Repo Type
+        type: select_one
+        items:
+        - name: git
+          title: GitHub/GitLab
+        - name: stash
+          title: BitBucket
+        - name: s3
+          title: Amazon s3
+        when: '{{repl ConfigOptionEquals "genabled" "1"}}'
+      when: '{{repl ConfigOptionEquals "genabled" "1"}}'
+    - name: Repo User Details
+      title: Repo User Details
+      description: "Enter the Git/Stash Username and Token to push/Pull the changes"
+      items:
+      - name: gusername
+        title: Repo Username
+        type: text
+        required: true
+      - name: gtoken
+        title: Repo Token
+        type: password
+        required: true
+      when: '{{repl and (ConfigOptionEquals "genabled" "1") (or (ConfigOptionEquals "repotype" "git") (ConfigOptionEquals "repotype" "stash"))}}'
+    - name: Repo Details
+      title: Repo Details
+      description: "Enter the Git/Stash Details reuired to configure OES in Gitops Style"
+      items:
+      - name: baseUrlHostName
+        title: Enter BaseURL Hostname
+        help_text: "The baseurl for public github repository is github.com and for gitlab its gitlab.com. If, private enter the baseurl accordingly"
+        type: text
+        required: true
+        default: "github.com"
+      - name: organization
+        title: Enter Organization Name
+        help_text: "Organization Details of your GitHub/Gitlab/BitBucket"
+        type: text
+        required: true
+        default: "OpsMx"
+      - name: projectName
+        title: Enter ProjectName
+        type: text
+        default: ""
+        hidden: true
+      - name: repository
+        title: Enter Repository Name
+        help_text: "Repository in Github where you store your configuration files related to both Spinnaker and OES. For sample configuration files, you have a look at https://github.com/OpsMx/standard-gitops-repo"
+        type: text
+        required: true
+        default: "standard-gitops-repo"
+      - name: halConfigPath
+        title: Directory of Hal
+        type: text
+        default: "/"
+        hidden: true
+      - name: dynAccntConfigPath
+        title: Directory of Ext Accounts
+        type: text
+        default: "dynaccount/"
+        hidden: true
+      when: '{{repl and (ConfigOptionEquals "genabled" "1") (or (ConfigOptionEquals "repotype" "git") (ConfigOptionEquals "repotype" "stash"))}}'
+    - name: Amazon s3 Details
+      title: Amazon s3 Details
+      description: |
+        Enter the s3 Details reuired to configure OES in Gitops Style. The configuration details will be stored in the s3 bucket which you opt.
+      items:
+      - name: s3accesskey
+        title: AccessKey of User
+        type: text
+        required: true
+      - name: s3secretkey
+        title: Secret Key of User
+        type: password
+        required: true
+      - name: s3bucket
+        title: s3 Bucket Name
+        type: text
+        required: true
+      - name: s3region
+        title: s3 Region Name
+        type: text
+        required: true
+      when: '{{repl and (ConfigOptionEquals "genabled" "1") (ConfigOptionEquals "repotype" "s3")}}'
+
+
+    - name: advancedfeatures
+      title: Advanced Features of OES
+      description: |
+        OES can be used with my advanced features and is strictly not recommended for first timers. PLease reach out to OpsMx Technical Support if you have any obstrucles with the installation.
+      items:
+        - name: advancedfeatures
+          title: OES's Advanced Features
+          type: bool
+          default: "0"
+    - name: externalRedis
+      title: Install External Redis 
+      description: Installs Bitnami Redis alongside OES
+      items:
+        - name: externalRedis
+          title: Install's Redis as a cache store for OES
+          help_text: Please uncheck if you want to configure a Ext. Redis
+          type: bool
+          default: "0"
+      when: '{{repl (ConfigOptionEquals "advancedfeatures" "1")}}'
+    - name: Enter Redis Details
+      title: Enter Ext. Redis Details
+      description: "Ext. Redis URL and Port are required"
+      items:
+      - name: externalhost
+        title: Enter Redis URL
+        type: text
+      - name: externalport
+        title: Enter Port for Ext. redis
+        type: text
+        default: "6379"
+      when: '{{repl and (ConfigOptionEquals "advancedfeatures" "1") (ConfigOptionEquals "externalRedis" "1")}}'
+    - name: auth
+      title: Authentication and Authorization Mechanism for OES
+      description: "Autn and Autz Mechanisms to be used with OES"
+      items:
+      - name: auth
+        type: select_one
+        items:
+        - name: ldap
+          title: Ext. LDAP
+        - name: saml
+          title: SAML
+        - name: oauth2
+          title: OAUTH2
+      when: '{{repl (ConfigOptionEquals "advancedfeatures" "1")}}'
+    - name: ldapdetails
+      title: LDAP Details
+      description: "Enter LDAP Details required to configure OES for authn and authz"
+      items:
+      - name: ldapurl
+        title: Enter the external LDAP URL
+        type: text
+      - name: lmanagerdn
+        title: Enter ManagerDN
+        type: text
+        default: "cn=admin,dc=example,dc=org"
+      - name: lmanagerpass
+        title: Enter Manager Password
+        type: password
+      - name: groupsearchbase
+        title: Enter Group Search Base
+        type: text
+        default: "ou=groups,dc=example,dc=org"
+      - name: groupsearchfilter
+        title: Enter Group Search Filter
+        type: text
+        default: "member={0}"
+      - name: grouproleattr
+        title: Enter Group Role Attributes
+        type: text
+        default: "cn"
+      - name: userdnpatt
+        title: Enter User DN Pattern
+        type: text
+        default: "cn={0},dc=example,dc=org"
+      when: '{{repl and (ConfigOptionEquals "advancedfeatures" "1") (ConfigOptionEquals "auth" "ldap")}}'
+    - name: samldetails
+      title: SAML Details
+      description: "Enter SAML Details required to configure OES for authn and authz. jksSecretName and metadataSecretName are to be preconfigured as the kubernetes secrets"
+      items:
+      - name: keyStorePassword
+        title: Enter KeyStore Password
+        type: password
+      - name: keyStoreAliasName
+        title: Enter KeyStore Alias Name
+        type: text
+        default: "saml"
+      - name: issuerId
+        title: Enter Issuer ID of the SAML Application
+        type: text
+      - name: userSource
+        title: Enter UserSource for OES
+        type: text
+        default: "gate"
+      - name: jksSecretName
+        title: Enter JKS Secret Name
+        type: text
+        default: "oes-saml-jks"
+      - name: metadataSecretName
+        title: Enter the Metadata secret Name
+        type: text
+        default: "metadata-xml"
+      when: '{{repl and (ConfigOptionEquals "advancedfeatures" "1") (ConfigOptionEquals "auth" "saml")}}'
+    - name: oauth2details
+      title: OAUTH2 Details
+      description: "Enter OAUTH2 Details required to configure OES for authn and authz. jksSecretName and metadataSecretName are to be preconfigured as the kubernetes secrets"
+      items:
+      - name: clientId
+        title: Enter Client ID
+        type: text
+      - name: clientSecret
+        title: Enter Client Secret
+        type: text
+      - name: accessTokenUri
+        title: Enter Access Token URL
+        type: text
+        default: "https://github.com/login/oauth/access_token"
+      - name: userAuthorizationUri
+        title: Enter User Authorization URI
+        type: text
+        default: "https://github.com/login/oauth/authorize"
+      - name: scope
+        title: Enter User Email
+        type: text
+      - name: userInfoUri
+        title: Enter User Info URI
+        type: text
+        default: "https://api.github.com/user"
+      - name: useremail
+        title: Enter User's EMAIL
+        type: text
+      - name: userfname
+        title: Enter User's FirstName
+        type: text
+      - name: userlname
+        title: Enter User's LastName
+        type: text
+      - name: username
+        title: Enter your Username
+        type: text
+      - name: provider
+        title: Enter name of your provider
+        type: text
+        default: "github"
+      when: '{{repl and (ConfigOptionEquals "advancedfeatures" "1") (ConfigOptionEquals "auth" "oauth2")}}'
+    - name: penabled
+      title: pipelinePromotion for Spinnaker
+      description: "Pipeline promotion to backup/syncup Pipelines from Repo"
+      items:
+        - name: penabled
+          title: Pipeline Promotion for Spinnaker
+          help_text: Backup/Syncup Pipelines in Spinnaker
+          type: bool
+          default: "0"
+      when: '{{repl (ConfigOptionEquals "advancedfeatures" "1")}}'
+
